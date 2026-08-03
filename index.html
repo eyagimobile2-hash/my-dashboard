@@ -3,382 +3,404 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>영업 대시보드</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<title>마케팅 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
-  :root{
-    --blue:#2a78d6;          /* 포인트 색 (단일) */
-    --blue-deep:#1c5cab;
-    --blue-mid:#5598e7;
-    --blue-soft:#86b6ef;     /* 비강조 막대 */
-    --blue-faint:#cde2fb;    /* 게이지 트랙 */
-    --ink:#0b0b0b;
-    --ink-2:#52514e;
-    --ink-3:#898781;
-    --grid:#e9e8e4;
-    --baseline:#c3c2b7;
-    --border:rgba(11,11,11,.10);
-    --surface:#ffffff;
+  :root {
+    --orange: #F76707;
+    --orange-soft: #FFF0E3;
+    --ink: #1F2430;
+    --ink-2: #5A6272;
+    --ink-3: #9AA1B0;
+    --line: #E8EAF0;
+    --bg: #F7F8FA;
+    --card: #FFFFFF;
   }
-  *{box-sizing:border-box}
-  body{
-    margin:0;background:var(--surface);color:var(--ink);
-    font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,"Segoe UI",sans-serif;
-    -webkit-font-smoothing:antialiased;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Pretendard", -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 20px;
   }
-  .wrap{max-width:1080px;margin:0 auto;padding:24px 20px 48px}
-  header{display:flex;align-items:baseline;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-  header h1{font-size:22px;font-weight:700;margin:0}
-  header .sub{font-size:14px;color:var(--ink-3)}
-  .state{padding:32px 0;color:var(--ink-3);font-size:15px}
-  .state.error{color:#c0392b}
+  .wrap { max-width: 1100px; margin: 0 auto; }
 
-  /* 카드 */
-  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-  .card{border:1px solid var(--border);border-radius:14px;padding:18px 18px 16px;background:var(--surface)}
-  .card .label{font-size:13px;color:var(--ink-2);margin-bottom:6px}
-  .card .value{font-size:24px;font-weight:700;line-height:1.15}
-  .card.hero .value{font-size:34px}
-  .card .note{font-size:13px;color:var(--ink-3);margin-top:6px}
-  .card .note strong{color:var(--ink-2);font-weight:600}
-  .meter{margin-top:12px;height:8px;border-radius:4px;background:var(--blue-faint);overflow:hidden}
-  .meter>i{display:block;height:100%;border-radius:4px;background:var(--blue)}
-  .rate{font-size:13px;color:var(--ink-2);margin-top:6px}
-  .rate b{color:var(--blue-deep);font-weight:700}
+  header { margin-bottom: 18px; }
+  header h1 { font-size: 22px; font-weight: 700; }
+  header p  { font-size: 13px; color: var(--ink-2); margin-top: 4px; }
 
-  /* 패널 2단 */
-  .grid2{display:grid;grid-template-columns:3fr 2fr;gap:12px;margin-bottom:16px}
-  .grid2.even{grid-template-columns:1fr 1fr}
-  .panel{border:1px solid var(--border);border-radius:14px;padding:18px;background:var(--surface)}
-  .panel h2{font-size:15px;font-weight:700;margin:0 0 4px}
-  .panel .desc{font-size:12.5px;color:var(--ink-3);margin:0 0 14px}
-  .panel svg{display:block;width:100%;height:auto}
-
-  /* 깔때기 */
-  .funnel-row{display:grid;grid-template-columns:76px 1fr 56px;align-items:center;gap:10px}
-  .funnel-row .name{font-size:13px;color:var(--ink-2);text-align:right}
-  .funnel-row .track{height:22px;display:flex;justify-content:center}
-  .funnel-row .bar{height:22px;border-radius:4px;min-width:6px}
-  .funnel-row .cnt{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
-  .funnel-conv{display:grid;grid-template-columns:76px 1fr 56px;gap:10px}
-  .funnel-conv span{grid-column:2;text-align:center;font-size:12px;color:var(--ink-3);padding:3px 0}
-  .funnel-total{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);
-    display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--ink-2)}
-  .funnel-total b{font-size:20px;font-weight:700;color:var(--blue-deep)}
-
-  /* 순위 */
-  .rank-row{display:grid;grid-template-columns:84px 1fr 84px;align-items:center;gap:10px;padding:7px 0}
-  .rank-row .name{font-size:13.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rank-row .name b{color:var(--ink);font-weight:600}
-  .rank-row .track{height:14px}
-  .rank-row .bar{height:14px;border-radius:0 4px 4px 0;background:var(--blue-soft);min-width:4px}
-  .rank-row:first-child .bar{background:var(--blue)}
-  .rank-row .amt{font-size:13px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
-  .rank-row:first-child .amt{color:var(--ink);font-weight:600}
-
-  /* 툴팁 */
-  #tip{position:fixed;z-index:10;pointer-events:none;display:none;
-    background:#fff;border:1px solid var(--border);border-radius:10px;
-    box-shadow:0 4px 16px rgba(0,0,0,.10);padding:10px 12px;font-size:13px;line-height:1.55}
-  #tip .t{font-weight:700;margin-bottom:2px}
-  #tip .r{color:var(--ink-2)}
-  #tip .r b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
-
-  @media (max-width:860px){
-    .cards{grid-template-columns:1fr 1fr}
-    .grid2,.grid2.even{grid-template-columns:1fr}
-    .card.hero .value{font-size:30px}
+  #status {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 28px; text-align: center; color: var(--ink-2); font-size: 14px;
   }
-  @media (max-width:400px){
-    .cards{grid-template-columns:1fr}
+  #status.error { color: #C92A2A; }
+  #app { display: none; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px;
+  }
+  .card h2 { font-size: 14px; font-weight: 600; color: var(--ink-2); margin-bottom: 12px; }
+
+  /* ── 상단 카드 4개 ── */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+  .kpi .label { font-size: 12.5px; color: var(--ink-2); margin-bottom: 6px; }
+  .kpi .value { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+  .kpi .value small { font-size: 14px; font-weight: 600; color: var(--ink-2); margin-left: 2px; }
+  .kpi .sub { font-size: 12px; color: var(--ink-3); margin-top: 5px; }
+  .kpi.main .value { font-size: 30px; color: var(--orange); }
+  .meter { height: 8px; background: var(--line); border-radius: 4px; margin-top: 10px; overflow: hidden; }
+  .meter > div { height: 100%; background: var(--orange); border-radius: 4px; }
+
+  /* ── 채널별 표 ── */
+  .table-card { margin-bottom: 12px; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 720px; }
+  th {
+    text-align: right; font-weight: 600; color: var(--ink-2); font-size: 12px;
+    padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  th:first-child, td:first-child { text-align: left; }
+  td { text-align: right; padding: 10px; border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td.ch { font-weight: 600; }
+  tbody tr:hover { background: #FAFBFC; }
+  tfoot td { font-weight: 700; border-bottom: none; background: #FAFBFC; }
+  .roas-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .roas-cell b { min-width: 44px; font-weight: 600; }
+  tfoot .roas-cell b { font-weight: 700; }
+  .roas-track { width: 72px; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; flex: none; }
+  .roas-track > div { height: 100%; background: var(--orange); border-radius: 4px; }
+
+  /* ── 하단 2열 ── */
+  .bottom { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
+  #trend-svg { width: 100%; height: auto; display: block; }
+
+  .pace-row { margin-bottom: 14px; }
+  .pace-row .pace-head { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-2); margin-bottom: 6px; }
+  .pace-row .pace-head b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .pace-bar { height: 14px; background: var(--line); border-radius: 7px; overflow: hidden; }
+  .pace-bar > div { height: 100%; border-radius: 7px; }
+  .pace-bar .spent { background: var(--orange); }
+  .pace-bar .days  { background: #C4C9D4; }
+  #pace-msg {
+    background: var(--orange-soft); border-radius: 10px; padding: 12px 14px;
+    font-size: 13.5px; line-height: 1.55; margin: 6px 0 14px;
+  }
+  #pace-msg b { color: var(--orange); }
+  .pace-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pace-stats > div { background: #FAFBFC; border: 1px solid var(--line); border-radius: 10px; padding: 10px; text-align: center; }
+  .pace-stats .t { font-size: 11.5px; color: var(--ink-3); margin-bottom: 4px; }
+  .pace-stats .v { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ── 차트 툴팁 ── */
+  #tip {
+    position: fixed; display: none; pointer-events: none; z-index: 10;
+    background: var(--ink); color: #fff; font-size: 12px; line-height: 1.5;
+    padding: 8px 10px; border-radius: 8px; white-space: nowrap;
+  }
+  #tip b { color: #FFB380; }
+
+  /* ── 모바일 ── */
+  @media (max-width: 860px) {
+    body { padding: 12px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .bottom { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 420px) {
+    .kpis { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>영업 대시보드</h1>
-    <span class="sub" id="asof"></span>
+    <h1>마케팅 대시보드</h1>
+    <p id="subtitle">데이터 불러오는 중…</p>
   </header>
 
-  <div id="loading" class="state">데이터를 불러오는 중…</div>
-  <div id="error" class="state error" style="display:none"></div>
+  <div id="status">데이터를 불러오는 중입니다…</div>
 
-  <div id="app" style="display:none">
-    <section class="cards">
-      <div class="card hero">
-        <div class="label">이번 달 매출</div>
-        <div class="value" id="c-rev"></div>
-        <div class="meter"><i id="c-meter"></i></div>
-        <div class="rate">목표 대비 <b id="c-rate"></b> 달성</div>
+  <div id="app">
+    <!-- 1. 상단 카드 -->
+    <div class="kpis">
+      <div class="card kpi main">
+        <div class="label" id="k1-label">이번 달 광고비</div>
+        <div class="value" id="k1-value">-</div>
+        <div class="meter"><div id="k1-bar" style="width:0%"></div></div>
+        <div class="sub" id="k1-sub">-</div>
+      </div>
+      <div class="card kpi">
+        <div class="label">통합 ROAS</div>
+        <div class="value" id="k2-value">-</div>
+        <div class="sub" id="k2-sub">-</div>
+      </div>
+      <div class="card kpi">
+        <div class="label">CAC (전환당 비용)</div>
+        <div class="value" id="k3-value">-</div>
+        <div class="sub" id="k3-sub">-</div>
+      </div>
+      <div class="card kpi">
+        <div class="label">전환수</div>
+        <div class="value" id="k4-value">-</div>
+        <div class="sub" id="k4-sub">-</div>
+      </div>
+    </div>
+
+    <!-- 2. 채널별 성과 표 -->
+    <div class="card table-card">
+      <h2>채널별 성과</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>채널</th><th>광고비</th><th>노출</th><th>클릭</th><th>CTR</th>
+              <th>CPC</th><th>전환</th><th>CPA</th><th>ROAS</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+          <tfoot id="tfoot"></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3 + 4. 하단 -->
+    <div class="bottom">
+      <div class="card">
+        <h2>월별 광고비 · ROAS 추이</h2>
+        <div id="trend"></div>
       </div>
       <div class="card">
-        <div class="label">이번 달 목표</div>
-        <div class="value" id="c-target"></div>
-        <div class="note" id="c-remain"></div>
+        <h2 id="pace-title">예산 소진 페이싱</h2>
+        <div class="pace-row">
+          <div class="pace-head"><span>예산 소진</span><b id="p1-pct">-</b></div>
+          <div class="pace-bar"><div class="spent" id="p1-bar" style="width:0%"></div></div>
+        </div>
+        <div class="pace-row">
+          <div class="pace-head"><span>기간 경과</span><b id="p2-pct">-</b></div>
+          <div class="pace-bar"><div class="days" id="p2-bar" style="width:0%"></div></div>
+        </div>
+        <div id="pace-msg">-</div>
+        <div class="pace-stats">
+          <div><div class="t">집행</div><div class="v" id="s-spent">-</div></div>
+          <div><div class="t">잔여</div><div class="v" id="s-left">-</div></div>
+          <div><div class="t">일 평균</div><div class="v" id="s-daily">-</div></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="label">객단가</div>
-        <div class="value" id="c-avg"></div>
-        <div class="note">이번 달 매출 ÷ 계약 건수</div>
-      </div>
-      <div class="card">
-        <div class="label">계약 건수</div>
-        <div class="value" id="c-deals"></div>
-        <div class="note" id="c-deals-note"></div>
-      </div>
-    </section>
-
-    <section class="grid2">
-      <div class="panel">
-        <h2>월별 매출</h2>
-        <p class="desc">진한 막대가 이번 달 · 점선은 이번 달 목표</p>
-        <div id="barchart"></div>
-      </div>
-      <div class="panel">
-        <h2>영업 단계 깔때기</h2>
-        <p class="desc">단계 사이 %는 이전 단계 대비 전환율</p>
-        <div id="funnel"></div>
-        <div class="funnel-total"><span>최종 전환율 (마지막 단계 ÷ 첫 단계)</span><b id="funnel-final"></b></div>
-      </div>
-    </section>
-
-    <section class="grid2 even">
-      <div class="panel">
-        <h2>담당자별 순위</h2>
-        <p class="desc">매출액 기준</p>
-        <div id="rank-person"></div>
-      </div>
-      <div class="panel">
-        <h2>상품별 순위</h2>
-        <p class="desc">매출액 기준</p>
-        <div id="rank-product"></div>
-      </div>
-    </section>
+    </div>
   </div>
 </div>
+
 <div id="tip"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // ─────────────────────────────────────────────
+  //  ★ 여기 두 줄만 본인 값으로 바꿔 주세요 ★
+  // ─────────────────────────────────────────────
+  const URL = "여기에_Project_URL_붙여넣기";
+  const KEY = "여기에_anon_key_붙여넣기";
+
   const { createClient } = supabase;
-  const db = createClient(
-    'https://bcjbafdasrnolqkypndh.supabase.co',
-    'sb_publishable_9KnndZ872V_bD8C6F-C_sw_ZWjH9KWB'
-  );
+  let db = null;
+  try { db = createClient(URL, KEY); } catch (e) { /* URL이 비어있거나 잘못된 경우 */ }
 
-  /* ---------- 포맷 ---------- */
-  // DB에 저장된 금액의 단위. 만원 단위면 10000, 원 단위면 1로 바꾸세요.
-  const UNIT = 10000;
-  function fmtMoney(n){
-    n = (Number(n) || 0) * UNIT;
-    const sign = n < 0 ? '-' : '';
-    const a = Math.abs(n);
-    if (a >= 1e8){
-      const v = a / 1e8;
-      return sign + (v >= 100 ? Math.round(v).toLocaleString('ko-KR') : String(Math.round(v*10)/10)) + '억원';
+  // 숫자 표시 도우미
+  const fmt  = n => Math.round(n).toLocaleString("ko-KR");
+  const pct1 = n => (Math.round(n * 10) / 10).toLocaleString("ko-KR");
+  const $ = id => document.getElementById(id);
+
+  async function load() {
+    if (URL.indexOf("붙여넣기") !== -1 || KEY.indexOf("붙여넣기") !== -1) {
+      showError("코드 안의 URL / KEY 두 줄을 본인 Supabase 값으로 바꿔 주세요. (메모장으로 열어 위쪽 ★ 표시 부분 수정)");
+      return;
     }
-    if (a >= 1e4){
-      const v = a / 1e4;
-      return sign + (v >= 100 ? Math.round(v).toLocaleString('ko-KR') : String(Math.round(v*10)/10)) + '만원';
+    if (!db) {
+      showError("Project URL 형식이 올바르지 않습니다. https://로 시작하는 주소인지 확인해 주세요.");
+      return;
     }
-    return sign + Math.round(a).toLocaleString('ko-KR') + '원';
-  }
-  function fmtFull(n){ return Math.round((Number(n)||0) * UNIT).toLocaleString('ko-KR') + '원'; }
-  function fmtMonth(m){
-    const s = String(m ?? '');
-    const ym = s.match(/^(\d{4})[-./](\d{1,2})/);
-    if (ym) return parseInt(ym[2],10) + '월';
-    return s;
-  }
-  function pct(n){ return (Math.round(n*10)/10) + '%'; }
-
-  /* ---------- 툴팁 ---------- */
-  const tip = document.getElementById('tip');
-  function showTip(html, x, y){
-    tip.innerHTML = html;
-    tip.style.display = 'block';
-    const r = tip.getBoundingClientRect();
-    let left = x + 14, top = y + 14;
-    if (left + r.width > window.innerWidth - 8) left = x - r.width - 14;
-    if (top + r.height > window.innerHeight - 8) top = y - r.height - 14;
-    tip.style.left = Math.max(8,left) + 'px';
-    tip.style.top = Math.max(8,top) + 'px';
-  }
-  function hideTip(){ tip.style.display = 'none'; }
-
-  /* ---------- 카드 ---------- */
-  function renderCards(monthly, pipeline){
-    const cur = monthly[monthly.length - 1];
-    const rev = Number(cur.revenue)||0, tgt = Number(cur.target)||0;
-    const rate = tgt > 0 ? rev/tgt*100 : 0;
-    const remain = Math.max(tgt - rev, 0);
-    const lastStage = pipeline[pipeline.length - 1];
-    const deals = Number(lastStage?.count)||0;
-
-    document.getElementById('asof').textContent = fmtMonth(cur.month) + ' 기준';
-    document.getElementById('c-rev').textContent = fmtMoney(rev);
-    document.getElementById('c-meter').style.width = Math.min(rate,100) + '%';
-    document.getElementById('c-rate').textContent = pct(rate);
-    document.getElementById('c-target').textContent = fmtMoney(tgt);
-    document.getElementById('c-remain').innerHTML = remain > 0
-      ? '남은 금액 <strong>' + fmtMoney(remain) + '</strong>'
-      : '목표 초과 달성 <strong>+' + fmtMoney(rev - tgt) + '</strong>';
-    document.getElementById('c-avg').textContent = deals > 0 ? fmtMoney(rev/deals) : '—';
-    document.getElementById('c-deals').textContent = deals.toLocaleString('ko-KR') + '건';
-    document.getElementById('c-deals-note').textContent = lastStage ? '파이프라인 "' + lastStage.stage + '" 단계' : '';
+    const [ch, mo, bu] = await Promise.all([
+      db.from("marketing_channel").select("*"),
+      db.from("marketing_monthly").select("*").order("sort_order", { ascending: true }),
+      db.from("marketing_budget").select("*")
+    ]);
+    const err = ch.error || mo.error || bu.error;
+    if (err) { showError("데이터를 불러오지 못했습니다: " + err.message); return; }
+    if (!ch.data.length || !bu.data.length) { showError("테이블에 데이터가 없습니다."); return; }
+    render(ch.data, mo.data, bu.data[0]);
   }
 
-  /* ---------- 월별 막대그래프 (SVG) ---------- */
-  function niceCeil(v){
-    if (v <= 0) return 1;
-    const p = Math.pow(10, Math.floor(Math.log10(v)));
-    const d = v / p;
-    const n = d <= 1 ? 1 : d <= 2 ? 2 : d <= 2.5 ? 2.5 : d <= 5 ? 5 : 10;
-    return n * p;
+  function showError(msg) {
+    const st = $("status");
+    st.textContent = msg;
+    st.className = "error";
+    $("subtitle").textContent = "연결 오류";
   }
-  function renderBarChart(monthly){
-    const W = 560, H = 260, padL = 64, padR = 16, padT = 26, padB = 30;
-    const cw = W - padL - padR, ch = H - padT - padB;
-    const cur = monthly[monthly.length - 1];
-    const tgt = Number(cur.target)||0;
-    const maxV = niceCeil(Math.max(...monthly.map(d => Number(d.revenue)||0), tgt) * 1.08);
-    const y = v => padT + ch - (v / maxV) * ch;
-    const band = cw / monthly.length;
-    const bw = Math.min(24, band * 0.55);
 
-    let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="월별 매출 막대그래프">';
-    // 가로 눈금선 + y축 라벨
-    const ticks = 4;
-    for (let i = 0; i <= ticks; i++){
-      const v = maxV / ticks * i, yy = y(v);
-      s += '<line x1="'+padL+'" y1="'+yy+'" x2="'+(W-padR)+'" y2="'+yy+'" stroke="'+(i===0?'#c3c2b7':'#e9e8e4')+'" stroke-width="1"/>';
-      if (i > 0) s += '<text x="'+(padL-8)+'" y="'+(yy+4)+'" text-anchor="end" font-size="11" fill="#898781">'+fmtMoney(v)+'</text>';
+  function render(channels, monthly, budget) {
+    // ── 합계 및 지표 계산 ──
+    const sum = k => channels.reduce((a, c) => a + c[k], 0);
+    const tSpend = sum("spend"), tImp = sum("impressions"), tClk = sum("clicks");
+    const tConv = sum("conversions"), tRev = sum("revenue");
+
+    const roasTotal = tRev / tSpend * 100;                 // ROAS = 매출÷광고비×100
+    const cac = tSpend * 10000 / tConv;                    // 만원 → 원 환산
+    const cvrTotal = tConv / tClk * 100;                   // CVR = 전환÷클릭×100
+
+    $("subtitle").textContent = budget.month + " 성과 · 캠페인 " + channels.length + "개 채널";
+    $("status").style.display = "none";
+    $("app").style.display = "block";
+
+    // ── 1. 상단 카드 ──
+    const spendPct = tSpend / budget.budget * 100;
+    $("k1-label").textContent = budget.month + " 광고비";
+    $("k1-value").innerHTML = fmt(tSpend) + "<small>만원</small>";
+    $("k1-bar").style.width = Math.min(spendPct, 100) + "%";
+    $("k1-sub").textContent = "예산 " + fmt(budget.budget) + "만원 중 " + pct1(spendPct) + "% 소진";
+
+    $("k2-value").innerHTML = pct1(roasTotal) + "<small>%</small>";
+    $("k2-sub").textContent = "매출 " + fmt(tRev) + "만원 ÷ 광고비 " + fmt(tSpend) + "만원";
+
+    $("k3-value").innerHTML = fmt(cac) + "<small>원</small>";
+    $("k3-sub").textContent = "광고비 ÷ 전환 " + fmt(tConv) + "건";
+
+    $("k4-value").innerHTML = fmt(tConv) + "<small>건</small>";
+    $("k4-sub").textContent = "CVR " + pct1(cvrTotal) + "% (클릭 " + fmt(tClk) + "회 중)";
+
+    // ── 2. 채널별 표 ──
+    const rows = channels.map(c => ({
+      channel: c.channel,
+      spend: c.spend, imp: c.impressions, clk: c.clicks, conv: c.conversions, rev: c.revenue,
+      ctr:  c.clicks / c.impressions * 100,       // CTR = 클릭÷노출×100
+      cpc:  c.spend * 10000 / c.clicks,           // CPC = 광고비÷클릭 (원)
+      cpa:  c.spend * 10000 / c.conversions,      // CPA = 광고비÷전환 (원)
+      roas: c.revenue / c.spend * 100
+    })).sort((a, b) => b.spend - a.spend);
+
+    const maxRoas = Math.max.apply(null, rows.map(r => r.roas).concat([roasTotal]));
+    const roasCell = v =>
+      '<div class="roas-cell"><b>' + pct1(v) + '%</b>' +
+      '<span class="roas-track"><div style="width:' + (v / maxRoas * 100) + '%"></div></span></div>';
+
+    $("tbody").innerHTML = rows.map(r =>
+      "<tr><td class='ch'>" + r.channel + "</td>" +
+      "<td>" + fmt(r.spend) + "만원</td>" +
+      "<td>" + fmt(r.imp) + "</td>" +
+      "<td>" + fmt(r.clk) + "</td>" +
+      "<td>" + pct1(r.ctr) + "%</td>" +
+      "<td>" + fmt(r.cpc) + "원</td>" +
+      "<td>" + fmt(r.conv) + "</td>" +
+      "<td>" + fmt(r.cpa) + "원</td>" +
+      "<td>" + roasCell(r.roas) + "</td></tr>"
+    ).join("");
+
+    $("tfoot").innerHTML =
+      "<tr><td>합계 · 평균</td>" +
+      "<td>" + fmt(tSpend) + "만원</td>" +
+      "<td>" + fmt(tImp) + "</td>" +
+      "<td>" + fmt(tClk) + "</td>" +
+      "<td>" + pct1(tClk / tImp * 100) + "%</td>" +
+      "<td>" + fmt(tSpend * 10000 / tClk) + "원</td>" +
+      "<td>" + fmt(tConv) + "</td>" +
+      "<td>" + fmt(cac) + "원</td>" +
+      "<td>" + roasCell(roasTotal) + "</td></tr>";
+
+    // ── 3. 월별 추이 차트 ──
+    drawTrend(monthly);
+
+    // ── 4. 예산 페이싱 ──
+    const daysPct = budget.days_passed / budget.days_total * 100;
+    const diff = spendPct - daysPct;
+    const daily = tSpend / budget.days_passed;
+    const runoutDay = Math.ceil(budget.budget / daily);
+
+    $("pace-title").textContent = budget.month + " 예산 소진 페이싱";
+    $("p1-pct").textContent = pct1(spendPct) + "%";
+    $("p1-bar").style.width = Math.min(spendPct, 100) + "%";
+    $("p2-pct").textContent = pct1(daysPct) + "% (" + budget.days_passed + "/" + budget.days_total + "일)";
+    $("p2-bar").style.width = Math.min(daysPct, 100) + "%";
+
+    let msg;
+    if (diff >= 0) {
+      msg = "기간 경과보다 <b>" + pct1(diff) + "%p 빠르게</b> 소진 중입니다.";
+    } else {
+      msg = "기간 경과보다 <b>" + pct1(-diff) + "%p 느리게</b> 소진 중입니다.";
     }
-    // 막대
-    monthly.forEach((d, i) => {
-      const rev = Number(d.revenue)||0;
-      const x = padL + band*i + (band - bw)/2;
-      const yy = y(rev), h = Math.max(padT + ch - yy, 0);
-      const isCur = i === monthly.length - 1;
-      const fill = isCur ? '#2a78d6' : '#86b6ef';
-      const rr = Math.min(4, h);
-      s += '<path class="bar-hit" data-i="'+i+'" fill="'+fill+'" d="M'+x+' '+(padT+ch)
-         + ' V'+(yy+rr)+' Q'+x+' '+yy+' '+(x+rr)+' '+yy
-         + ' H'+(x+bw-rr)+' Q'+(x+bw)+' '+yy+' '+(x+bw)+' '+(yy+rr)
-         + ' V'+(padT+ch)+' Z"/>';
-      // 히트 영역(막대보다 넓게, 투명)
-      s += '<rect class="bar-hit" data-i="'+i+'" x="'+(padL+band*i)+'" y="'+padT+'" width="'+band+'" height="'+ch+'" fill="transparent"/>';
-      if (isCur) s += '<text x="'+(x+bw/2)+'" y="'+(yy-7)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#0b0b0b">'+fmtMoney(rev)+'</text>';
-      s += '<text x="'+(x+bw/2)+'" y="'+(H-9)+'" text-anchor="middle" font-size="11.5" fill="'+(isCur?'#0b0b0b':'#898781')+'"'+(isCur?' font-weight="700"':'')+'>'+fmtMonth(d.month)+'</text>';
+    if (runoutDay <= budget.days_total) {
+      msg += " 이 속도면 <b>" + runoutDay + "일째</b>에 예산이 바닥납니다.";
+    } else {
+      const projected = daily * budget.days_total;
+      msg += " 이 속도면 월말까지 약 " + fmt(projected) + "만원 집행으로 <b>예산 안</b>에서 마무리됩니다.";
+    }
+    $("pace-msg").innerHTML = msg;
+
+    $("s-spent").textContent = fmt(tSpend) + "만원";
+    $("s-left").textContent  = fmt(budget.budget - tSpend) + "만원";
+    $("s-daily").textContent = pct1(daily) + "만원";
+  }
+
+  // ── 광고비 막대 + ROAS 선 겹친 SVG 차트 ──
+  function drawTrend(monthly) {
+    const W = 600, H = 270, padL = 16, padR = 16, padT = 34, padB = 30;
+    const iw = W - padL - padR, ih = H - padT - padB;
+    const n = monthly.length;
+    if (!n) { $("trend").innerHTML = "<p style='color:var(--ink-3);font-size:13px'>월별 데이터가 없습니다.</p>"; return; }
+
+    const maxSpend = Math.max.apply(null, monthly.map(m => m.spend)) * 1.15;
+    const roasVals = monthly.map(m => Number(m.roas));
+    const rMin = Math.min.apply(null, roasVals), rMax = Math.max.apply(null, roasVals);
+    const rPad = Math.max((rMax - rMin) * 0.35, 10);
+
+    const slot = iw / n;
+    const barW = Math.min(slot * 0.5, 44);
+    const x = i => padL + slot * i + slot / 2;
+    const yBar  = v => padT + ih - (v / maxSpend) * ih;
+    // ROAS 선은 차트 위쪽 55% 영역에 배치 (값은 점 옆에 직접 표기)
+    const yLine = v => padT + (1 - (v - (rMin - rPad)) / ((rMax + rPad) - (rMin - rPad))) * ih * 0.55;
+
+    let s = '<svg id="trend-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+
+    // 막대 (광고비)
+    monthly.forEach((m, i) => {
+      const bx = x(i) - barW / 2, by = yBar(m.spend), bh = padT + ih - by;
+      s += '<path class="hit" data-i="' + i + '" d="M' + bx + ' ' + (by + 4) +
+           ' a4 4 0 0 1 4 -4 h' + (barW - 8) + ' a4 4 0 0 1 4 4 v' + (bh - 4) +
+           ' h-' + barW + ' Z" fill="#FFD9B8"/>';
+      s += '<text x="' + x(i) + '" y="' + (by - 7) + '" text-anchor="middle" font-size="11" fill="#9AA1B0">' + fmt(m.spend) + '</text>';
+      s += '<text x="' + x(i) + '" y="' + (H - 9) + '" text-anchor="middle" font-size="12" fill="#5A6272">' + m.month + '</text>';
     });
-    // 목표 점선 (이번 달 목표)
-    if (tgt > 0){
-      const ty = y(tgt);
-      s += '<line x1="'+padL+'" y1="'+ty+'" x2="'+(W-padR)+'" y2="'+ty+'" stroke="#52514e" stroke-width="1.5" stroke-dasharray="5 4"/>';
-      s += '<text x="'+(W-padR)+'" y="'+(ty-6)+'" text-anchor="end" font-size="11" fill="#52514e">목표 '+fmtMoney(tgt)+'</text>';
-    }
+
+    // 선 (ROAS)
+    const pts = monthly.map((m, i) => x(i) + ',' + yLine(Number(m.roas)));
+    s += '<polyline points="' + pts.join(' ') + '" fill="none" stroke="#F76707" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    monthly.forEach((m, i) => {
+      const cy = yLine(Number(m.roas));
+      s += '<circle class="hit" data-i="' + i + '" cx="' + x(i) + '" cy="' + cy + '" r="4.5" fill="#F76707" stroke="#fff" stroke-width="2"/>';
+      s += '<text x="' + x(i) + '" y="' + (cy - 10) + '" text-anchor="middle" font-size="11.5" font-weight="600" fill="#F76707">' + pct1(Number(m.roas)) + '%</text>';
+    });
+
+    // 범례
+    s += '<rect x="' + padL + '" y="8" width="10" height="10" rx="3" fill="#FFD9B8"/>' +
+         '<text x="' + (padL + 15) + '" y="17" font-size="11.5" fill="#5A6272">광고비(만원)</text>' +
+         '<line x1="' + (padL + 96) + '" y1="13" x2="' + (padL + 114) + '" y2="13" stroke="#F76707" stroke-width="2.5"/>' +
+         '<text x="' + (padL + 119) + '" y="17" font-size="11.5" fill="#5A6272">ROAS(%)</text>';
+
     s += '</svg>';
-    const el = document.getElementById('barchart');
-    el.innerHTML = s;
+    $("trend").innerHTML = s;
 
-    el.addEventListener('mousemove', e => {
-      const t = e.target.closest('.bar-hit');
-      if (!t) { hideTip(); return; }
-      const d = monthly[Number(t.dataset.i)];
-      const rev = Number(d.revenue)||0, tg = Number(d.target)||0;
-      showTip('<div class="t">'+fmtMonth(d.month)+'</div>'
-        + '<div class="r">매출 <b>'+fmtFull(rev)+'</b></div>'
-        + '<div class="r">목표 <b>'+fmtFull(tg)+'</b></div>'
-        + (tg>0 ? '<div class="r">달성률 <b>'+pct(rev/tg*100)+'</b></div>' : ''),
-        e.clientX, e.clientY);
+    // 툴팁
+    const tip = $("tip");
+    document.querySelectorAll("#trend .hit").forEach(el => {
+      el.addEventListener("mousemove", e => {
+        const m = monthly[Number(el.getAttribute("data-i"))];
+        tip.innerHTML = m.month + "<br>광고비 <b>" + fmt(m.spend) + "만원</b><br>ROAS <b>" + pct1(Number(m.roas)) + "%</b>";
+        tip.style.display = "block";
+        tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 150) + "px";
+        tip.style.top = (e.clientY - 10) + "px";
+      });
+      el.addEventListener("mouseleave", () => { tip.style.display = "none"; });
     });
-    el.addEventListener('mouseleave', hideTip);
   }
 
-  /* ---------- 깔때기 ---------- */
-  function renderFunnel(pipeline){
-    const shades = ['#86b6ef','#6da7ec','#5598e7','#3987e5','#2a78d6','#256abf','#1c5cab'];
-    const first = Number(pipeline[0]?.count)||0;
-    let html = '';
-    pipeline.forEach((d, i) => {
-      const c = Number(d.count)||0;
-      const w = first > 0 ? Math.max(c/first*100, 2) : 2;
-      const color = shades[Math.min(Math.round(i/(Math.max(pipeline.length-1,1))*(shades.length-1)), shades.length-1)];
-      if (i > 0){
-        const prev = Number(pipeline[i-1].count)||0;
-        html += '<div class="funnel-conv"><span>↓ '+(prev>0?pct(c/prev*100):'—')+'</span></div>';
-      }
-      html += '<div class="funnel-row" data-i="'+i+'">'
-        + '<div class="name">'+d.stage+'</div>'
-        + '<div class="track"><div class="bar" style="width:'+w+'%;background:'+color+'"></div></div>'
-        + '<div class="cnt">'+c.toLocaleString('ko-KR')+'건</div></div>';
-    });
-    const el = document.getElementById('funnel');
-    el.innerHTML = html;
-    const last = Number(pipeline[pipeline.length-1]?.count)||0;
-    document.getElementById('funnel-final').textContent = first > 0 ? pct(last/first*100) : '—';
-
-    el.addEventListener('mousemove', e => {
-      const row = e.target.closest('.funnel-row');
-      if (!row) { hideTip(); return; }
-      const i = Number(row.dataset.i), d = pipeline[i];
-      const c = Number(d.count)||0;
-      showTip('<div class="t">'+d.stage+'</div>'
-        + '<div class="r">건수 <b>'+c.toLocaleString('ko-KR')+'건</b></div>'
-        + (first>0 ? '<div class="r">첫 단계 대비 <b>'+pct(c/first*100)+'</b></div>' : ''),
-        e.clientX, e.clientY);
-    });
-    el.addEventListener('mouseleave', hideTip);
-  }
-
-  /* ---------- 순위 ---------- */
-  function renderRank(rows, elId){
-    const max = Math.max(...rows.map(d => Number(d.amount)||0), 1);
-    const el = document.getElementById(elId);
-    el.innerHTML = rows.map((d, i) => {
-      const a = Number(d.amount)||0;
-      return '<div class="rank-row" data-i="'+i+'">'
-        + '<div class="name"><b>'+(i+1)+'위</b> '+d.name+'</div>'
-        + '<div class="track"><div class="bar" style="width:'+(a/max*100)+'%"></div></div>'
-        + '<div class="amt">'+fmtMoney(a)+'</div></div>';
-    }).join('');
-    el.addEventListener('mousemove', e => {
-      const row = e.target.closest('.rank-row');
-      if (!row) { hideTip(); return; }
-      const d = rows[Number(row.dataset.i)];
-      showTip('<div class="t">'+d.name+'</div><div class="r">매출 <b>'+fmtFull(d.amount)+'</b></div>', e.clientX, e.clientY);
-    });
-    el.addEventListener('mouseleave', hideTip);
-  }
-
-  /* ---------- 로드 ---------- */
-  async function load(){
-    try{
-      const [m, p, r] = await Promise.all([
-        db.from('sales_monthly').select('*').order('sort_order', { ascending: true }),
-        db.from('sales_pipeline').select('*').order('sort_order', { ascending: true }),
-        db.from('sales_rank').select('*').order('amount', { ascending: false })
-      ]);
-      const err = m.error || p.error || r.error;
-      if (err) throw err;
-      if (!m.data?.length || !p.data?.length) throw new Error('테이블에 데이터가 없습니다.');
-
-      renderCards(m.data, p.data);
-      renderBarChart(m.data);
-      renderFunnel(p.data);
-      renderRank(r.data.filter(d => d.kind === 'person'), 'rank-person');
-      renderRank(r.data.filter(d => d.kind === 'product'), 'rank-product');
-
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-    }catch(e){
-      document.getElementById('loading').style.display = 'none';
-      const el = document.getElementById('error');
-      el.style.display = 'block';
-      el.textContent = '데이터를 불러오지 못했습니다: ' + (e.message || e);
-    }
-  }
   load();
 </script>
 </body>
